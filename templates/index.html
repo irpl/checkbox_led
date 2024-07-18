@@ -6,20 +6,39 @@
     <title>checkbox led</title>
     <style>
       body {
+        padding: 0;
+        margin: 0;
         width: 100vw;
+        height: 100vh;
         display: flex;
         justify-content: center;
+        align-items: center;
       }
       .container {
-        min-width: 90%;
-        width: 160px;
+        /* min-width: 90%; */
+        margin-top: -100px;
+        width: 300px;
+        height: 300px;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
       }
       .checkbox-container {
         width: 20%;
-        height: 30px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* padding: 0 0 0 20px; */
+      }
+      .checkbox {
+        /* Double-sized Checkboxes */
+        -ms-transform: scale(3); /* IE */
+        -moz-transform: scale(3); /* FF */
+        -webkit-transform: scale(3); /* Safari and Chrome */
+        -o-transform: scale(3); /* Opera */
+        transform: scale(3);
+        /* padding: 10px; */
       }
     </style>
   </head>
