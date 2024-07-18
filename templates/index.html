@@ -53,6 +53,10 @@
           this.bits = new Uint32Array(Math.ceil(size / 32));
         }
 
+        setBitsInt(bitsInt) {
+          this.bits[0] = bitsInt;
+        }
+
         get(index) {
           const arrayIndex = Math.floor(index / 32);
           const bitIndex = index % 32;
@@ -87,10 +91,15 @@
         document.getElementsByClassName("container")[0].appendChild(checkboxContainer);
       }
 
+      fetch("/state")
+        .then((res) => res.text())
+        .then((res) => setState(parseInt(res)));
+
       var ws = new WebSocket("/ws");
       ws.onmessage = async function (event) {
         var data = await event.data.arrayBuffer();
-        // let c = new Uint32Array(data);
+        let c = new Uint32Array(data);
+        // console.log(c);
         let dv = new DataView(data, false);
         let value = dv.getUint32(0);
         console.log(value);
@@ -107,6 +116,7 @@
       var bitset = new BitSet(1);
 
       function setState(intendedState) {
+        bitset.setBitsInt(intendedState);
         var bits = intendedState.toString(2).padStart(30, 0);
         bits = bits.split("").reverse().join("");
         console.log(bits);
