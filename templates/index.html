@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>checkbox led</title>
+    <style>
+      body {
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+      }
+      .container {
+        min-width: 90%;
+        width: 160px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .checkbox-container {
+        width: 20%;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="container"></div>
+    </div>
+    <script>
+      class BitSet {
+        constructor(size) {
+          this.size = size;
+          this.bits = new Uint32Array(Math.ceil(size / 32));
+        }
+
+        get(index) {
+          const arrayIndex = Math.floor(index / 32);
+          const bitIndex = index % 32;
+          return (this.bits[arrayIndex] & (1 << bitIndex)) !== 0;
+        }
+
+        set(index) {
+          const arrayIndex = Math.floor(index / 32);
+          const bitIndex = index % 32;
+          const mask = 1 << bitIndex;
+          this.bits[arrayIndex] |= mask;
+        }
+
+        clear(index) {
+          const arrayIndex = Math.floor(index / 32);
+          const bitIndex = index % 32;
+          const mask = ~(1 << bitIndex);
+          this.bits[arrayIndex] &= mask;
+        }
+      }
+
+      for (var i = 0; i < 30; i++) {
+        var checkboxContainer = document.createElement("div");
+        checkboxContainer.classList = ["checkbox-container"];
+
+        var checkboxEl = document.createElement("input");
+        checkboxEl.id = `checkbox-${i}`;
+        checkboxEl.type = "checkbox";
+        checkboxEl.classList = ["checkbox"];
+
+        checkboxContainer.appendChild(checkboxEl);
+        document.getElementsByClassName("container")[0].appendChild(checkboxContainer);
+      }
+
+      var ws = new WebSocket("/ws");
+      ws.onmessage = function (event) {
+        console.log(`sent ${event.data}`);
+        // setState(parseInt(event.data));
+      };
+      function sendMessage() {
+        ws.send(bitset.bits[0]);
+      }
+
+      var checkboxes = document.getElementsByClassName("checkbox");
+
+      // var state = 0;
+      var bitset = new BitSet(30);
+
+      function setState(intendedState) {
+        var bits = intendedState.toString(2).padStart(30, 0);
+        bits = bits.split("").reverse().join("");
+        console.log(bits);
+
+        var checkboxes = document.getElementsByClassName("checkbox");
+        for (let i = 0; i < 30; i++) {
+          checkboxes[i].checked = bits[i] == "1" ? true : false;
+        }
+      }
+
+      // function set(position) {
+      //   state |= 1 << position;
+      // }
+      // function clear(position) {
+      //   state &= ~(1 << position);
+      // }
+
+      function handleCheckboxChange(event) {
+        var position = parseInt(event.target.id.split("-")[1]);
+        if (event.target.checked) bitset.set(position);
+        else bitset.clear(position);
+
+        console.log(bitset.bits);
+        sendMessage();
+      }
+
+      for (let checkbox of checkboxes) {
+        checkbox.addEventListener("change", handleCheckboxChange);
+      }
+    </script>
+  </body>
+</html>
