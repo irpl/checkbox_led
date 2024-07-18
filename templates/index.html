@@ -88,9 +88,14 @@
       }
 
       var ws = new WebSocket("/ws");
-      ws.onmessage = function (event) {
-        console.log(`sent ${event.data}`);
-        // setState(parseInt(event.data));
+      ws.onmessage = async function (event) {
+        var data = await event.data.arrayBuffer();
+        // let c = new Uint32Array(data);
+        let dv = new DataView(data, false);
+        let value = dv.getUint32(0);
+        console.log(value);
+
+        setState(value);
       };
       function sendMessage() {
         ws.send(bitset.bits[0]);
@@ -99,7 +104,7 @@
       var checkboxes = document.getElementsByClassName("checkbox");
 
       // var state = 0;
-      var bitset = new BitSet(30);
+      var bitset = new BitSet(1);
 
       function setState(intendedState) {
         var bits = intendedState.toString(2).padStart(30, 0);

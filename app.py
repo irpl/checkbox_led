@@ -48,10 +48,12 @@ async def websocket_endpoint(websocket: WebSocket):
   try:
     while True:
       data = await websocket.receive_text()
-      print(data)
+      # print(data)
       global state 
       state = int(data)
-      data = state.to_bytes((state.bit_length() + 7) // 8, byteorder='big')
+      # data = state.to_bytes((state.bit_length() + 7) // 8, byteorder='big')
+      data = state.to_bytes(4, 'big')
+      print(data)
       # hex_data = bytes.fromhex(data["color"])
       await manager.broadcast(data)
       # manager.whisper(bytes.fromhex(data))
